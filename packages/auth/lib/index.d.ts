@@ -174,9 +174,16 @@ export namespace FirebaseAuthTypes {
      *
      * @returns {@link auth.AuthCredential}.
      * @param oidcSuffix this is the "Provider ID" value from the firebase console fx `azure_test`.
-     * @param token A provider token.
+     * @param idToken The OIDC ID token.
+     * @param accessToken The OIDC access token (optional).
+     * @param rawNonce The raw nonce associated with the auth credential. Required for ID tokens that contain nonce fields (optional).
      */
-    credential: (oidcSuffix: string, idToken: string) => AuthCredential;
+    credential: (
+      oidcSuffix: string,
+      idToken: string,
+      accessToken?: string | null,
+      rawNonce?: string,
+    ) => AuthCredential;
   }
 
   /**

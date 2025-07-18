@@ -26,11 +26,17 @@ export default class OIDCAuthProvider {
     return providerId;
   }
 
-  static credential(oidcSuffix, idToken, accessToken) {
-    return {
+  static credential(oidcSuffix, idToken, accessToken, rawNonce) {
+    const credential = {
       token: idToken,
       secret: accessToken,
       providerId: providerId + oidcSuffix,
     };
+
+    if (rawNonce) {
+      credential.rawNonce = rawNonce;
+    }
+
+    return credential;
   }
 }
