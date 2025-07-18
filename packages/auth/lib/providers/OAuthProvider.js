@@ -27,12 +27,18 @@ export default class OAuthProvider {
     this.#providerId = providerId;
   }
 
-  static credential(idToken, accessToken) {
-    return {
+  static credential(idToken, accessToken, rawNonce) {
+    const credential = {
       token: idToken,
       secret: accessToken,
       providerId: 'oauth',
     };
+
+    if (rawNonce) {
+      credential.rawNonce = rawNonce;
+    }
+
+    return credential;
   }
 
   get PROVIDER_ID() {

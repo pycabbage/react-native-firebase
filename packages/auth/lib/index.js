@@ -346,7 +346,12 @@ class FirebaseAuthModule extends FirebaseModule {
 
   signInWithCredential(credential) {
     return this.native
-      .signInWithCredential(credential.providerId, credential.token, credential.secret)
+      .signInWithCredential(
+        credential.providerId,
+        credential.token,
+        credential.secret,
+        credential.rawNonce,
+      )
       .then(userCredential => this._setUserCredential(userCredential));
   }
 

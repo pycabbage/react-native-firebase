@@ -895,11 +895,16 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   private void signInWithCredential(
-      String appName, String provider, String authToken, String authSecret, final Promise promise) {
+      String appName,
+      String provider,
+      String authToken,
+      String authSecret,
+      String rawNonce,
+      final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
+    AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret, rawNonce);
 
     if (credential == null) {
       rejectPromiseWithCodeAndMessage(
@@ -1612,11 +1617,16 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    */
   @ReactMethod
   private void linkWithCredential(
-      String appName, String provider, String authToken, String authSecret, final Promise promise) {
+      String appName,
+      String provider,
+      String authToken,
+      String authSecret,
+      String rawNonce,
+      final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
+    AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret, rawNonce);
 
     if (credential == null) {
       rejectPromiseWithCodeAndMessage(
@@ -1766,11 +1776,16 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   private void reauthenticateWithCredential(
-      String appName, String provider, String authToken, String authSecret, final Promise promise) {
+      String appName,
+      String provider,
+      String authToken,
+      String authSecret,
+      String rawNonce,
+      final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
+    AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret, rawNonce);
 
     if (credential == null) {
       rejectPromiseWithCodeAndMessage(
@@ -1884,7 +1899,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   /** Returns an instance of AuthCredential for the specified provider */
   private AuthCredential getCredentialForProvider(
-      String provider, String authToken, String authSecret) {
+      String provider, String authToken, String authSecret, String rawNonce) {
     if (provider.startsWith("oidc.")) {
       return OAuthProvider.newCredentialBuilder(provider).setIdToken(authToken).build();
     }
@@ -1906,7 +1921,13 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             .setIdTokenWithRawNonce(authToken, authSecret)
             .build();
       case "oauth":
-        return OAuthProvider.getCredential(provider, authToken, authSecret);
+        if (rawNonce != null && !rawNonce.isEmpty()) {
+          return OAuthProvider.newCredentialBuilder("oauth")
+              .setIdTokenWithRawNonce(authToken, rawNonce)
+              .build();
+        } else {
+          return OAuthProvider.getCredential(provider, authToken, authSecret);
+        }
       case "phone":
         return getPhoneAuthCredential(authToken, authSecret);
       case "password":

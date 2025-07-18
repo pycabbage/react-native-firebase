@@ -446,6 +446,7 @@ RCT_EXPORT_METHOD(updatePhoneNumber
         (FIRPhoneAuthCredential *)[self getCredentialForProvider:provider
                                                            token:authToken
                                                           secret:authSecret
+                                                        rawNonce:nil
                                                      firebaseApp:firebaseApp];
 
     if (credential == nil) {
@@ -582,11 +583,13 @@ RCT_EXPORT_METHOD(signInWithCredential
                   : (NSString *)provider
                   : (NSString *)authToken
                   : (NSString *)authSecret
+                  : (NSString *)rawNonce
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRAuthCredential *credential = [self getCredentialForProvider:provider
                                                            token:authToken
                                                           secret:authSecret
+                                                        rawNonce:rawNonce
                                                      firebaseApp:firebaseApp];
   if (credential == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -1081,11 +1084,13 @@ RCT_EXPORT_METHOD(linkWithCredential
                   : (NSString *)provider
                   : (NSString *)authToken
                   : (NSString *)authSecret
+                  : (NSString *)rawNonce
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRAuthCredential *credential = [self getCredentialForProvider:provider
                                                            token:authToken
                                                           secret:authSecret
+                                                        rawNonce:rawNonce
                                                      firebaseApp:firebaseApp];
 
   if (credential == nil) {
@@ -1206,11 +1211,13 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential
                   : (NSString *)provider
                   : (NSString *)authToken
                   : (NSString *)authSecret
+                  : (NSString *)rawNonce
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRAuthCredential *credential = [self getCredentialForProvider:provider
                                                            token:authToken
                                                           secret:authSecret
+                                                        rawNonce:rawNonce
                                                      firebaseApp:firebaseApp];
 
   if (credential == nil) {
@@ -1371,6 +1378,7 @@ RCT_EXPORT_METHOD(useEmulator
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider
                                           token:(NSString *)authToken
                                          secret:(NSString *)authTokenSecret
+                                       rawNonce:(NSString *)rawNonce
                                     firebaseApp:(FIRApp *)firebaseApp {
   FIRAuthCredential *credential;
 
@@ -1407,9 +1415,15 @@ RCT_EXPORT_METHOD(useEmulator
                         verificationCode:authTokenSecret];
 #endif
   } else if ([provider compare:@"oauth" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIROAuthProvider credentialWithProviderID:@"oauth"
-                                                    IDToken:authToken
-                                                accessToken:authTokenSecret];
+    if (rawNonce != nil && rawNonce.length > 0) {
+      credential = [FIROAuthProvider credentialWithProviderID:@"oauth"
+                                                      IDToken:authToken
+                                                     rawNonce:rawNonce];
+    } else {
+      credential = [FIROAuthProvider credentialWithProviderID:@"oauth"
+                                                      IDToken:authToken
+                                                  accessToken:authTokenSecret];
+    }
   } else if ([provider hasPrefix:@"oidc."]) {
     credential = [FIROAuthProvider credentialWithProviderID:provider
                                                     IDToken:authToken

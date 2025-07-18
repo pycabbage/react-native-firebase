@@ -89,6 +89,11 @@ export namespace FirebaseAuthTypes {
     providerId: string;
     token: string;
     secret: string;
+    /**
+     * The raw nonce associated with the auth credential. Requires for ID tokens that contain nonce fields.
+     * @optional
+     */
+    rawNonce?: string;
   }
 
   /**
@@ -125,8 +130,9 @@ export namespace FirebaseAuthTypes {
      * @returns {@link auth.AuthCredential}.
      * @param token A provider token.
      * @param secret A provider secret.
+     * @param rawNonce A raw nonce value when required by ID tokens.
      */
-    credential: (token: string | null, secret?: string) => AuthCredential;
+    credential: (token: string | null, secret?: string, rawNonce?: string) => AuthCredential;
     /**
      * Sets the OAuth custom parameters to pass in an OAuth request for sign-in
      * operations.

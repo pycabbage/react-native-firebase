@@ -93,7 +93,12 @@ export default class User {
 
   linkWithCredential(credential) {
     return this._auth.native
-      .linkWithCredential(credential.providerId, credential.token, credential.secret)
+      .linkWithCredential(
+        credential.providerId,
+        credential.token,
+        credential.secret,
+        credential.rawNonce,
+      )
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
@@ -110,7 +115,12 @@ export default class User {
 
   reauthenticateWithCredential(credential) {
     return this._auth.native
-      .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
+      .reauthenticateWithCredential(
+        credential.providerId,
+        credential.token,
+        credential.secret,
+        credential.rawNonce,
+      )
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
