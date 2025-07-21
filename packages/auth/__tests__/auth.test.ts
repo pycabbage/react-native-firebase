@@ -1243,4 +1243,84 @@ describe('Auth', function () {
       });
     });
   });
+
+  describe('Auth Providers with rawNonce', function () {
+    describe('OAuthProvider.credential()', function () {
+      it('should create credential with rawNonce', function () {
+        const idToken = 'test-id-token';
+        const accessToken = 'test-access-token';
+        const rawNonce = 'test-raw-nonce';
+
+        const credential = auth.OAuthProvider.credential(idToken, accessToken, rawNonce);
+
+        expect(credential).toBeDefined();
+        expect(credential.providerId).toEqual('oauth');
+        expect(credential.token).toEqual(idToken);
+        expect(credential.secret).toEqual(accessToken);
+        expect(credential.rawNonce).toEqual(rawNonce);
+      });
+
+      it('should create credential without rawNonce (backward compatibility)', function () {
+        const idToken = 'test-id-token';
+        const accessToken = 'test-access-token';
+
+        const credential = auth.OAuthProvider.credential(idToken, accessToken);
+
+        expect(credential).toBeDefined();
+        expect(credential.providerId).toEqual('oauth');
+        expect(credential.token).toEqual(idToken);
+        expect(credential.secret).toEqual(accessToken);
+        expect(credential.rawNonce).toBeUndefined();
+      });
+    });
+
+    describe('OIDCAuthProvider.credential()', function () {
+      it('should create credential with rawNonce', function () {
+        const providerSuffix = 'test-provider';
+        const idToken = 'test-id-token';
+        const accessToken = 'test-access-token';
+        const rawNonce = 'test-raw-nonce';
+
+        const credential = auth.OIDCAuthProvider.credential(
+          providerSuffix,
+          idToken,
+          accessToken,
+          rawNonce,
+        );
+
+        expect(credential).toBeDefined();
+        expect(credential.providerId).toEqual('oidc.' + providerSuffix);
+        expect(credential.token).toEqual(idToken);
+        expect(credential.secret).toEqual(accessToken);
+        expect(credential.rawNonce).toEqual(rawNonce);
+      });
+
+      it('should create credential without rawNonce (backward compatibility)', function () {
+        const providerSuffix = 'test-provider';
+        const idToken = 'test-id-token';
+        const accessToken = 'test-access-token';
+
+        const credential = auth.OIDCAuthProvider.credential(providerSuffix, idToken, accessToken);
+
+        expect(credential).toBeDefined();
+        expect(credential.providerId).toEqual('oidc.' + providerSuffix);
+        expect(credential.token).toEqual(idToken);
+        expect(credential.secret).toEqual(accessToken);
+        expect(credential.rawNonce).toBeUndefined();
+      });
+
+      it('should create credential without accessToken and rawNonce', function () {
+        const providerSuffix = 'test-provider';
+        const idToken = 'test-id-token';
+
+        const credential = auth.OIDCAuthProvider.credential(providerSuffix, idToken);
+
+        expect(credential).toBeDefined();
+        expect(credential.providerId).toEqual('oidc.' + providerSuffix);
+        expect(credential.token).toEqual(idToken);
+        expect(credential.secret).toBeUndefined();
+        expect(credential.rawNonce).toBeUndefined();
+      });
+    });
+  });
 });

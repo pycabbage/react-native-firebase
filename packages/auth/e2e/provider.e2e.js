@@ -165,6 +165,27 @@ describe('auth() -> Providers', function () {
           credential.token.should.equal(idToken);
           credential.secret.should.equal(accessToken);
         });
+
+        it('should return a credential object with rawNonce', function () {
+          const idToken = '123456';
+          const accessToken = '654321';
+          const rawNonce = 'raw-nonce-value';
+          const credential = firebase.auth.OAuthProvider.credential(idToken, accessToken, rawNonce);
+          credential.providerId.should.equal('oauth');
+          credential.token.should.equal(idToken);
+          credential.secret.should.equal(accessToken);
+          credential.rawNonce.should.equal(rawNonce);
+        });
+
+        it('should return a credential object without rawNonce for backward compatibility', function () {
+          const idToken = '123456';
+          const accessToken = '654321';
+          const credential = firebase.auth.OAuthProvider.credential(idToken, accessToken);
+          credential.providerId.should.equal('oauth');
+          credential.token.should.equal(idToken);
+          credential.secret.should.equal(accessToken);
+          should.not.exist(credential.rawNonce);
+        });
       });
 
       describe('PROVIDER_ID', function () {
@@ -258,6 +279,48 @@ describe('auth() -> Providers', function () {
           credential.providerId.should.equal('oidc.' + providerSuffix);
           credential.token.should.equal(token);
           credential.secret.should.equal(secret);
+        });
+
+        it('should return a credential object with rawNonce', function () {
+          const token = '123456';
+          const secret = '654321';
+          const providerSuffix = 'sample-provider';
+          const rawNonce = 'raw-nonce-value';
+          const credential = firebase.auth.OIDCAuthProvider.credential(
+            providerSuffix,
+            token,
+            secret,
+            rawNonce,
+          );
+          credential.providerId.should.equal('oidc.' + providerSuffix);
+          credential.token.should.equal(token);
+          credential.secret.should.equal(secret);
+          credential.rawNonce.should.equal(rawNonce);
+        });
+
+        it('should return a credential object without rawNonce for backward compatibility', function () {
+          const token = '123456';
+          const secret = '654321';
+          const providerSuffix = 'sample-provider';
+          const credential = firebase.auth.OIDCAuthProvider.credential(
+            providerSuffix,
+            token,
+            secret,
+          );
+          credential.providerId.should.equal('oidc.' + providerSuffix);
+          credential.token.should.equal(token);
+          credential.secret.should.equal(secret);
+          should.not.exist(credential.rawNonce);
+        });
+
+        it('should return a credential object with only token', function () {
+          const token = '123456';
+          const providerSuffix = 'sample-provider';
+          const credential = firebase.auth.OIDCAuthProvider.credential(providerSuffix, token);
+          credential.providerId.should.equal('oidc.' + providerSuffix);
+          credential.token.should.equal(token);
+          should.not.exist(credential.secret);
+          should.not.exist(credential.rawNonce);
         });
       });
 
@@ -467,6 +530,31 @@ describe('auth() -> Providers', function () {
           credential.token.should.equal(idToken);
           credential.secret.should.equal(accessToken);
         });
+
+        it('should return a credential object with rawNonce', function () {
+          const { OAuthProvider } = authModular;
+
+          const idToken = '123456';
+          const accessToken = '654321';
+          const rawNonce = 'raw-nonce-value';
+          const credential = OAuthProvider.credential(idToken, accessToken, rawNonce);
+          credential.providerId.should.equal('oauth');
+          credential.token.should.equal(idToken);
+          credential.secret.should.equal(accessToken);
+          credential.rawNonce.should.equal(rawNonce);
+        });
+
+        it('should return a credential object without rawNonce for backward compatibility', function () {
+          const { OAuthProvider } = authModular;
+
+          const idToken = '123456';
+          const accessToken = '654321';
+          const credential = OAuthProvider.credential(idToken, accessToken);
+          credential.providerId.should.equal('oauth');
+          credential.token.should.equal(idToken);
+          credential.secret.should.equal(accessToken);
+          should.not.exist(credential.rawNonce);
+        });
       });
 
       describe('PROVIDER_ID', function () {
@@ -571,6 +659,45 @@ describe('auth() -> Providers', function () {
           credential.providerId.should.equal('oidc.' + providerSuffix);
           credential.token.should.equal(token);
           credential.secret.should.equal(secret);
+        });
+
+        it('should return a credential object with rawNonce', function () {
+          const { OIDCAuthProvider } = authModular;
+
+          const token = '123456';
+          const secret = '654321';
+          const providerSuffix = 'sample-provider';
+          const rawNonce = 'raw-nonce-value';
+          const credential = OIDCAuthProvider.credential(providerSuffix, token, secret, rawNonce);
+          credential.providerId.should.equal('oidc.' + providerSuffix);
+          credential.token.should.equal(token);
+          credential.secret.should.equal(secret);
+          credential.rawNonce.should.equal(rawNonce);
+        });
+
+        it('should return a credential object without rawNonce for backward compatibility', function () {
+          const { OIDCAuthProvider } = authModular;
+
+          const token = '123456';
+          const secret = '654321';
+          const providerSuffix = 'sample-provider';
+          const credential = OIDCAuthProvider.credential(providerSuffix, token, secret);
+          credential.providerId.should.equal('oidc.' + providerSuffix);
+          credential.token.should.equal(token);
+          credential.secret.should.equal(secret);
+          should.not.exist(credential.rawNonce);
+        });
+
+        it('should return a credential object with only token', function () {
+          const { OIDCAuthProvider } = authModular;
+
+          const token = '123456';
+          const providerSuffix = 'sample-provider';
+          const credential = OIDCAuthProvider.credential(providerSuffix, token);
+          credential.providerId.should.equal('oidc.' + providerSuffix);
+          credential.token.should.equal(token);
+          should.not.exist(credential.secret);
+          should.not.exist(credential.rawNonce);
         });
       });
 

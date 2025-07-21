@@ -53,7 +53,7 @@ const config = {
   clientId: 'XXXX',
   redirectUrl: 'msauth.your.bundle.id://auth/',
   scopes: ['openid', 'profile', 'email', 'offline_access'],
-  useNonce: false,
+  useNonce: true, // Enable nonce for enhanced security
 };
 
 // Log in to get an authentication token
@@ -62,7 +62,25 @@ const authState = await authorize(config);
 const credential = OIDCAuthProvider.credential(
   'azure_test', // this is the "Provider ID" value from the firebase console
   authState.idToken,
+  authState.accessToken, // Optional access token
+  authState.additionalParameters?.nonce, // Optional raw nonce if your provider returns it
 );
 
 await signInWithCredential(getAuth(), credential);
+```
+
+### Using Raw Nonce
+
+When your OIDC provider includes a nonce field in the ID token, you can pass the raw nonce value to the credential method. This ensures proper validation of the ID token:
+
+```jsx
+// If you have a raw nonce value from your authentication flow
+const rawNonce = 'your-raw-nonce-value';
+
+const credential = OIDCAuthProvider.credential(
+  'azure_test',
+  authState.idToken,
+  authState.accessToken,
+  rawNonce, // Pass the raw nonce as the 4th parameter
+);
 ```
